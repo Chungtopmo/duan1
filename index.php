@@ -1,67 +1,93 @@
 <?php
-session_start();
-include "model/pdo.php";
-//include "model/danhmuc.php";
-//include "model/sanpham.php";
-include "model/taikhoan.php";
+include("header.php");
 
-switch () {
-    case 'dangky':
-        if (isset($_POST['dangky']) && ($_POST['dangky'])) {
-            $email = $_POST['email'];
-            $user = $_POST['user'];
-            $pass = $_POST['pass'];
-            issert_taikhoan($email, $user, $pass);
-            $thongbao = "Đăng ký thành công";
-        }
-        include "view/taikhoan/dangky.php";
-        break;
-        // ======= 
 
-    case 'dangnhap':
-        if (isset($_POST['dangnhap']) && ($_POST['dangnhap'])) {
-            $user = $_POST['user'];
-            $pass = $_POST['pass'];
-            $checkuser = checkuser($user, $pass);
-            if (is_array($checkuser)) {
-                $_SESSION['user'] = $checkuser;
-                // $thongbao="Đăng nhập thành công";
-                header('Location: index.php');
-            } else {
-                $thongbao = "Tài khoản không tồn tại";
-            }
-        }
-        include "view/taikhoan/dangky.php";
-        break;
-        // ======= 
+$con = new connec();
+$tbl = "slider";
+$result = $con->select_all($tbl);
+$result1 = $con->select_all($tbl);
 
-    case 'edit_taikhoan':
-        if (isset($_POST['capnhat']) && ($_POST['capnhat'])) {
-            $user = $_POST['user'];
-            $pass = $_POST['pass'];
-            $email = $_POST['email'];
-            $address = $_POST['address'];
-            $tel = $_POST['tel'];
-            $id = $_POST['id'];
-            update_taikhoan($id, $user, $pass, $email, $address, $tel);
-            $_SESSION['user'] = checkuser($user, $pass);
-            header('Location: index.php?act=edit_taikhoan');
-        }
-        include "view/taikhoan/edit_taikhoan.php";
-        break;
-        // ======= 
-
-    case 'quenmk':
-        if (isset($_POST['guiemail']) && ($_POST['guiemail'])) {
-            $email = $_POST['email'];
-            $checkemail = checkemail($email);
-            if (is_array($checkemail)) {
-                $thongbao = "Mật khẩu của bạn là: " . $checkemail['pass'];
-            } else {
-                $thongbao = "Email không tồn tại";
-            }
-        }
-        include "view/taikhoan/quenmk.php";
-        break;
+if(empty($_SESSION["username"]))
+{
+    ?>
+        <script>
+            $(document).ready(function(){
+                $("#modelId1").modal('show');
+            });
+        </script>
+    <?php
 }
+
+?>
+
+
+<section style="min-height:450px;">
+
+<div id="carouselId" class="carousel slide" data-ride="carousel">
+    <?php
+        if($result->num_rows>0)
+        {
+            $i=0;
+            echo '<ol class="carousel-indicators">';
+            while($row=$result->fetch_assoc())
+            {
+                if($i==0)
+                {
+                    echo '<li data-target="#carouselId" data-slide-to="'.$i.'" class="active"></li>';
+                }
+                else
+                {
+                    echo '<li data-target="#carouselId" data-slide-to="'.$i.'"></li>';
+                }
+                $i++;
+            }
+            echo '</ol>';
+        }
+    ?>
+    <div class="carousel-inner" role="listbox">
+        <?php
+            if($result1->num_rows>0)
+            {
+                $j=0;
+                while($row1=$result1->fetch_assoc())
+                {
+                    if($j==0)
+                    {
+                        ?>
+                        <div class="carousel-item active">
+                            <img src="<?php echo $row1["img_path"]; ?>" alt="<?php echo $row1["alt"]; ?>" style="width:100%;height:500px;" >
+                        </div>
+                        <?php
+                    }
+                    else
+                    {
+                        ?>
+                        <div class="carousel-item">
+                            <img src="<?php echo $row1["img_path"]; ?>" alt="<?php echo $row1["alt"]; ?>" style="width:100%;height:500px;">
+                        </div>
+                        <?php
+                    }
+                    $j++;
+                }
+            }
+        ?>
+    </div>
+    <a class="carousel-control-prev" href="#carouselId" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselId" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+
+
+
+</section>
+
+
+
+<?php
+include("footer.php");
 ?>
